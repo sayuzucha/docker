@@ -1,0 +1,81 @@
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Microservicios - Sayuri</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; margin: 2rem; }
+      header { background:#0b74da; color:white; padding:1rem; border-radius:8px; }
+      h1 { margin:0; font-size:1.6rem; }
+      .card { margin-top:1rem; padding:1rem; border:1px solid #ddd; border-radius:8px; }
+      button { padding:8px 12px; border-radius:6px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Proyecto Microservicios - Sayuri</h1>
+      <div>Frontend simple que consume la API. Mi nombre: <strong>Sayuri Estefania Zuniga Chacon</strong></div>
+    </header>
+
+    <div class="card">
+      <h2>Endpoint con apellido (zuñiga)</h2>
+      <button id="get-name">Obtener nombre completo</button>
+      <pre id="name-result"></pre>
+    </div>
+
+    <div class="card">
+      <h2>CRUD simple: Items</h2>
+      <input id="item-name" placeholder="Nombre item" />
+      <button id="add-item">Agregar</button>
+      <ul id="items-list"></ul>
+    </div>
+
+    <script>
+      const backendPort = 5000;
+      const backendHost = window.location.hostname;
+      const base = `http://${backendHost}:${backendPort}`;
+
+      document.getElementById('get-name').addEventListener('click', async () => {
+        const res = await fetch(base + '/api/zuniga');
+        const data = await res.json();
+        document.getElementById('name-result').textContent = JSON.stringify(data, null, 2);
+      });
+
+      async function loadItems() {
+        const res = await fetch(base + '/api/items');
+        const items = await res.json();
+        const list = document.getElementById('items-list');
+        list.innerHTML = '';
+        items.forEach(it => {
+          const li = document.createElement('li');
+          li.textContent = `${it.id}: ${it.name} `;
+          const b = document.createElement('button');
+          b.textContent = 'Eliminar';
+          b.onclick = async () => {
+            await fetch(base + '/api/items/' + it.id, { method: 'DELETE' });
+            loadItems();
+          };
+          li.appendChild(b);
+          list.appendChild(li);
+        });
+      }
+
+      document.getElementById('add-item').addEventListener('click', async () => {
+        const name = document.getElementById('item-name').value;
+        if (!name) return alert('Escribe un nombre');
+        await fetch(base + '/api/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        document.getElementById('item-name').value = '';
+        loadItems();
+      });
+
+      // initial load
+      loadItems();
+    </script>
+  </body>
+</html>

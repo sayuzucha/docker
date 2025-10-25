@@ -1,0 +1,57 @@
+
+version: '3.8'
+
+services:
+  db_zuniga:
+    image: postgres:15
+    container_name: db_zuniga
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sayuri_user
+      POSTGRES_PASSWORD: SuperSeguroR00tP@ss
+      POSTGRES_DB: sayuri_db
+    volumes:
+      - sayuri_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - micro_net
+
+  backend_sayuri:
+    build: ./backend
+    container_name: backend_sayuri
+    restart: unless-stopped
+    depends_on:
+      - db_zuniga
+    environment:
+      DB_HOST: db_zuniga
+      DB_PORT: 5432
+      DB_USER: sayuri_user
+      DB_PASSWORD: SuperSeguroR00tP@ss
+      DB_DATABASE: sayuri_db
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    networks:
+      - micro_net
+
+  frontend_sayuri:
+    build: ./frontend
+    container_name: frontend_sayuri
+    restart: unless-stopped
+    depends_on:
+      - backend_sayuri
+    ports:
+      - "80:3000"
+    environment:
+      REACT_APP_BACKEND_HOST: "" # optional, frontend will derive host at runtime
+    networks:
+      - micro_net
+
+volumes:
+  sayuri_db_data:
+    name: sayuri_db_data
+
+networks:
+  micro_net:
+    driver: bridge
