@@ -1,4 +1,3 @@
-
 version: '3.8'
 
 services:
@@ -13,7 +12,7 @@ services:
     volumes:
       - sayuri_db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5432:5432"  # solo si quieres probar DB desde fuera
     networks:
       - micro_net
 
@@ -42,15 +41,12 @@ services:
     depends_on:
       - backend_sayuri
     ports:
-      - "80:3000"
-    environment:
-      REACT_APP_BACKEND_HOST: "" # optional, frontend will derive host at runtime
+      - "80:3000"      # EC2 puerto 80 → contenedor 3000
     networks:
       - micro_net
 
 volumes:
   sayuri_db_data:
-    name: sayuri_db_data
 
 networks:
   micro_net:

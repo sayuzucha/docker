@@ -1,4 +1,3 @@
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
@@ -35,7 +34,7 @@ app.get('/api/zuniga', (req, res) => {
   res.json({ fullName: 'Sayuri Estefania Zuniga Chacon' });
 });
 
-// CRUD endpoints for /api/items
+
 app.get('/api/items', async (req, res) => {
   const result = await pool.query('SELECT * FROM items ORDER BY id');
   res.json(result.rows);
@@ -54,7 +53,8 @@ app.delete('/api/items/:id', async (req, res) => {
   res.json({ deleted: id });
 });
 
-app.listen(PORT, async () => {
+
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`Backend listening on port ${PORT}`);
   try {
     await initDB();

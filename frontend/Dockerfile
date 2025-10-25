@@ -1,11 +1,15 @@
-
 FROM node:20-slim
 
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install --omit=dev
 
+# Copiamos archivos estáticos
 COPY . .
 
+# Instalamos 'serve' para servir HTML estático
+RUN npm install -g serve
+
+# Exponemos puerto 3000
 EXPOSE 3000
-CMD ["node", "server.js"]
+
+# Servimos la carpeta actual
+CMD ["serve", "-s", ".", "-l", "3000"]
